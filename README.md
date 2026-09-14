@@ -10,19 +10,25 @@ One-click, **data-safe** fix for Windows “Allocation failed / process out of m
 RUN.bat
 ```
 
-If crashing / OOM pressure returns later (after pagefile is on):
+If crashing / OOM pressure returns later:
 
 ```bat
-RUN-RELEASE-MEMORY.bat
+IF-CRASH-AGAIN.bat
 ```
 
-Preview only (lists targets, changes nothing):
+Or memory-only:
+
+```bat
+RELEASE-MEMORY.bat
+```
+
+Preview:
 
 ```bat
 RUN-RELEASE-MEMORY-WHATIF.bat
 ```
 
-That release script **stops only safe orphans** (leftover Prisma/`db:push` Node, Playwright Chromium). It does **not** kill your editor, chats, desktop agents, OS processes, Postgres/Redis, or normal Chrome — and **never deletes** files.
+That release path **stops only safe orphans** (leftover Prisma/`db:push` Node, Playwright Chromium; optional browsers if you say Y). It does **not** kill your editor, chats, desktop agents, OS, Postgres/Redis — and **never deletes** files.
 
 Admin once (pagefile enable — **adds** virtual memory only):
 

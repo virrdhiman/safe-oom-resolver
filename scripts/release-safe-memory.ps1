@@ -76,9 +76,9 @@ function Test-IsProtected([System.Diagnostics.Process]$Proc, [string]$Path, [str
   return $false
 }
 
-function Get-CimCmdLine([int]$Pid) {
+function Get-CimCmdLine([int]$ProcessId) {
   try {
-    $c = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $Pid) -ErrorAction Stop
+    $c = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $ProcessId) -ErrorAction Stop
     return @{ Path = $c.ExecutablePath; CommandLine = $c.CommandLine }
   } catch {
     return @{ Path = $null; CommandLine = $null }
@@ -147,7 +147,7 @@ $trimmed = @()
 
 Get-Process -ErrorAction SilentlyContinue | ForEach-Object {
   $p = $_
-  $meta = Get-CimCmdLine -Pid $p.Id
+  $meta = Get-CimCmdLine -ProcessId $p.Id
   $path = $meta.Path
   $cmd = $meta.CommandLine
 

@@ -46,7 +46,7 @@ $hasPagefileHeadroom = $totalVirtMB -gt ($totalPhysMB + 512)
 
 if ($freeCommitMB -lt 1500) {
   Write-Step "Low commit - running SAFE orphan release (editor/chats/agents protected)"
-  & "$Root\scripts\release-safe-memory.ps1"
+  & "$Root\scripts\release-memory-safe.ps1"
   $os = Get-CimInstance Win32_OperatingSystem
   $freeCommitMB = [math]::Round($os.FreeVirtualMemory / 1024)
 }

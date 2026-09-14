@@ -14,15 +14,21 @@
 .PARAMETER WhatIf
   Show what would be stopped; do not stop anything.
 
+.PARAMETER Aggressive
+  Also stop other large Node/Bun processes (not the editor). Use when still OOM after normal release.
+
 .PARAMETER MinMB
   Only consider processes using at least this many MB (default 80).
 #>
 param(
   [switch]$IncludeBrowsers,
   [switch]$IncludeChatApps,
+  [switch]$Aggressive,
   [switch]$WhatIf,
   [int]$MinMB = 80
 )
+
+$script:Aggressive = [bool]$Aggressive
 
 $ErrorActionPreference = "Continue"
 $Root = Split-Path -Parent $PSScriptRoot
@@ -77,8 +83,15 @@ function Test-IsProtectedProcess($proc) {
   if ($n -match '^(Cursor|Cursor Helper)') { return $true }
   if ($proc.Path -and ($proc.Path -match '[\\/]Cursor[\\/]|Programs\\cursor|cursor-agent')) { return $true }
 
+  # Protect other desktop agents
+  if ($n -match '(?i)desktop.?agent|agent.?desktop') { return $true }
+  if ($proc.Path -and ($proc.Path -match '(?i)Desktop Agent|desktop-agent')) { return $true }
+
+  # Protect DB / Redis / Docker (do not disturb local stack)
+  if ($n -match '^(postgres|pg_ctl|redis-server|Memurai|memurai|com\.docker|Docker Desktop|vpnkit)$') { return $true }
+
   $cmd = Get-CmdLine $proc.Id
-  if ($cmd -and ($cmd -match '[\\/]Cursor[\\/]|cursor-agent|Cursor\.exe')) { return $true }
+  if ($cmd -and ($cmd -match '[\\/]Cursor[\\/]|cursor-agent|Cursor\.exe|desktop-agent')) { return $true }
 
   # Protect Windows system directories by path
   if ($proc.Path -and ($proc.Path -match '\\Windows\\System32\\|\\Windows\\SysWOW64\\|\\Windows\\SystemApps\\')) {
@@ -95,14 +108,24 @@ function Test-IsReleaseCandidate($proc) {
   $cmd = Get-CmdLine $proc.Id
   $path = if ($proc.Path) { $proc.Path } else { '' }
 
-  # Leftover Node / Bun / Playwright Chromium - but not editor-owned
-  $isNodeFamily = ($n -in @('node', 'nodejs', 'bun', 'prisma')) -or
-    ($n -match '^(chrome|chromium)$' -and ($cmd -match 'playwright|puppeteer|ms-playwright|flipkart|automation'))
+  # Leftover absorbers - selective so normal `npm run dev` can stay unless -Aggressive
+  $isPlaywrightChrome = ($n -match '^(chrome|chromium)$') -and ($cmd -match '(?i)playwright|puppeteer|ms-playwright|user-data-dir=.*(flipkart|pw-|tmp)')
+  if ($isPlaywrightChrome) { return $true }
 
-  if ($isNodeFamily) {
-    if ($cmd -match '[\\/]Cursor[\\/]|cursor-agent') { return $false }
-    if ($path -match '[\\/]Cursor[\\/]') { return $false }
-    return $true
+  if ($n -eq 'prisma') { return $true }
+
+  if ($n -in @('node', 'nodejs', 'bun')) {
+    if ($cmd -match '(?i)[\\/]Cursor[\\/]|cursor-agent') { return $false }
+    if ($path -match '(?i)[\\/]Cursor[\\/]') { return $false }
+    # Clear crash leftovers: prisma push, huge heap pins, ensure-local
+    if ($cmd -match '(?i)prisma|db push|db:push|prisma-push-safe|ensure-local-stack|max-old-space-size=(8192|16384)') {
+      return $true
+    }
+    # Optional: any large Node/Bun not editor-owned
+    if ($script:Aggressive) { return $true }
+    # Very large stray node (>700MB) without editor path - treat as absorber
+    if ($proc.WorkingSet64 -gt 700MB) { return $true }
+    return $false
   }
 
   if ($IncludeBrowsers) {
