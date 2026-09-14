@@ -1,8 +1,8 @@
 # safe-oom-resolver
 
-One-click, **data-safe** fix for Windows “Allocation failed / process out of memory” crashes that take down your editor, Node, Prisma `db:push`, and agent chats.
+One-click, **data-safe** fix for Windows **and macOS** “Allocation failed / process out of memory” crashes that take down your editor, Node, Prisma `db:push`, and agent chats.
 
-**Never deletes** system files, user data, DB volumes, backups, pagefile contents, or agent transcripts.
+**Never deletes** system files, user data, DB volumes, backups, pagefile/swap contents, or agent transcripts.
 
 ## Quick run (Windows)
 
@@ -30,7 +30,23 @@ RUN-RELEASE-MEMORY-WHATIF.bat
 
 That release path **stops only safe orphans** (leftover Prisma/`db:push` Node, Playwright Chromium; optional browsers if you say Y). It does **not** kill your editor, chats, desktop agents, OS, Postgres/Redis — and **never deletes** files.
 
-Admin once (pagefile enable — **adds** virtual memory only):
+## Quick run (macOS)
+
+```bash
+cd mac
+chmod +x *.sh
+./RUN.sh
+```
+
+If pressure returns:
+
+```bash
+./IF-CRASH-AGAIN.sh
+```
+
+Details: [`mac/README.md`](mac/README.md). macOS swap is automatic (no Windows-style pagefile enable). Scripts only diagnose + release safe orphans — same no-delete / protect-editor rules.
+
+Admin once (Windows pagefile enable — **adds** virtual memory only):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\enable-pagefile-safe.ps1

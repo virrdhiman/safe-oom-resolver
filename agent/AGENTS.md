@@ -10,9 +10,9 @@ Chat archive (this incident): [`CHAT-ARCHIVE-2026-09-14.md`](CHAT-ARCHIVE-2026-0
 1. **Never delete system files**, recovery folders, pagefile, user profiles, or “to free space” OS trees. Data recovery took **10+ days** once — do not repeat.
 2. **Never wipe** Postgres/Redis volumes, OTP JSON, `Account.storageState`, backups, or `.env`.
 3. Treat editor/agent aborts + Prisma `Allocation failed` as **commit exhaustion**, not “corrupt install”.
-4. Prefer `D:\pers\safe-oom-resolver\RUN.bat` before inventing cleanup scripts.
-5. If OOM returns: `RUN-RELEASE-MEMORY.bat` only — never kill the editor/desktop agents; never delete chats/data.
-6. Do not pin Node `--max-old-space-size=8192` on ≤16GB Windows without a working pagefile.
+4. Prefer `D:\pers\safe-oom-resolver\RUN.bat` (Windows) or `.../mac/RUN.sh` (macOS) before inventing cleanup scripts.
+5. If OOM returns: `IF-CRASH-AGAIN.bat` / `mac/IF-CRASH-AGAIN.sh` only — never kill the editor/desktop agents; never delete chats/data.
+6. Do not pin Node `--max-old-space-size=8192` on ≤16GB machines without working swap/pagefile.
 
 ## Quick diagnose
 
