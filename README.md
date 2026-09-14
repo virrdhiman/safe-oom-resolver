@@ -65,11 +65,12 @@ Then reboot.
 ## Layout
 
 ```
-RUN.bat / resolve.ps1              <- diagnose (+ auto safe release if commit low)
-RUN-RELEASE-MEMORY.bat             <- if OOM returns: stop safe orphans only
-RUN-RELEASE-MEMORY-WHATIF.bat      <- preview targets
-RUN-ADMIN-PAGEFILE.bat             <- once: create C:\pagefile.sys (reboot)
-scripts/                           <- diagnose, pagefile, release-safe-memory
+RUN.bat / IF-CRASH-AGAIN.bat       <- Windows entry
+mac/RUN.sh / mac/IF-CRASH-AGAIN.sh <- macOS entry (same process)
+RUN-ADMIN-PAGEFILE.bat             <- Windows once: C:\pagefile.sys + reboot
+mac/ensure-swap-safe.sh            <- macOS: check swap/disk only
+scripts/                           <- Windows PowerShell helpers
+mac/                               <- macOS bash helpers
 agent/                             <- playbook + chat archive for future agents
 templates/                         <- prisma-push-safe.mjs drop-in
 ```
@@ -80,9 +81,9 @@ Read **`agent/AGENTS.md`** and **`agent/PLAYBOOK.md`** before touching memory, P
 
 ## Safety contract
 
-1. No `del` / `rm` of Windows system paths, `%SystemRoot%`, Program Files, user profiles, or recovery folders.
+1. No deletes of OS paths, user profiles, recovery folders, or agent chats (Windows or macOS).
 2. No wiping Postgres/Redis volumes, `Account.storageState`, OTP JSON, or backups.
-3. Pagefile script only turns **on** automatic managed paging — it does not shrink disks or wipe files.
+3. Windows pagefile script only **adds** virtual memory; macOS script only **checks** automatic swap.
 4. Prefer refuse + instruct over thrashing the machine into a crash.
 
 ## Origin story (2026-09-14)
