@@ -20,9 +20,13 @@
 
 1. Close unused Chrome / extra editor windows (user-driven; do not force-kill without asking).
 2. Run `RUN.bat` from this repo (diagnose + guidance).
-3. Admin once: `RUN-ADMIN-PAGEFILE.bat` → **reboot**.
-4. Replace blind 8GB Prisma heap with commit-aware push (see `templates/prisma-push-safe.mjs`).
-5. Skip redundant `db:push` when schema hash unchanged.
+3. If pressure returns later: `RUN-RELEASE-MEMORY.bat` (or `-WHATIF` first).
+   - Stops only orphan Prisma/Node `db:push` leftovers and Playwright Chromium.
+   - Never kills the editor, chats, desktop agents, OS, DB, or normal Chrome.
+   - Never deletes files or transcripts.
+4. Admin once: `RUN-ADMIN-PAGEFILE.bat` → **reboot**.
+5. Replace blind 8GB Prisma heap with commit-aware push (see `templates/prisma-push-safe.mjs`).
+6. Skip redundant `db:push` when schema hash unchanged.
 
 ## Forbidden “fixes”
 

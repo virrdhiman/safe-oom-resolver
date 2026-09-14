@@ -44,6 +44,13 @@ $totalVirtMB = [math]::Round($os.TotalVirtualMemorySize / 1024)
 $totalPhysMB = [math]::Round($os.TotalVisibleMemorySize / 1024)
 $hasPagefileHeadroom = $totalVirtMB -gt ($totalPhysMB + 512)
 
+if ($freeCommitMB -lt 1500) {
+  Write-Step "Low commit - running SAFE orphan release (editor/chats/agents protected)"
+  & "$Root\scripts\release-safe-memory.ps1"
+  $os = Get-CimInstance Win32_OperatingSystem
+  $freeCommitMB = [math]::Round($os.FreeVirtualMemory / 1024)
+}
+
 if (-not $hasPagefileHeadroom) {
   Write-Warn "Commit limit ~ physical RAM - Windows pagefile appears OFF/empty."
   Write-Warn "This is the usual root cause of editor/Prisma OOM crashes."

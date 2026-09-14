@@ -11,7 +11,8 @@ Chat archive (this incident): [`CHAT-ARCHIVE-2026-09-14.md`](CHAT-ARCHIVE-2026-0
 2. **Never wipe** Postgres/Redis volumes, OTP JSON, `Account.storageState`, backups, or `.env`.
 3. Treat editor/agent aborts + Prisma `Allocation failed` as **commit exhaustion**, not “corrupt install”.
 4. Prefer `D:\pers\safe-oom-resolver\RUN.bat` before inventing cleanup scripts.
-5. Do not pin Node `--max-old-space-size=8192` on ≤16GB Windows without a working pagefile.
+5. If OOM returns: `RUN-RELEASE-MEMORY.bat` only — never kill the editor/desktop agents; never delete chats/data.
+6. Do not pin Node `--max-old-space-size=8192` on ≤16GB Windows without a working pagefile.
 
 ## Quick diagnose
 

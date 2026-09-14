@@ -10,11 +10,19 @@ One-click, **data-safe** fix for Windows “Allocation failed / process out of m
 RUN.bat
 ```
 
-Or:
+If crashing / OOM pressure returns later (after pagefile is on):
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\resolve.ps1
+```bat
+RUN-RELEASE-MEMORY.bat
 ```
+
+Preview only (lists targets, changes nothing):
+
+```bat
+RUN-RELEASE-MEMORY-WHATIF.bat
+```
+
+That release script **stops only safe orphans** (leftover Prisma/`db:push` Node, Playwright Chromium). It does **not** kill your editor, chats, desktop agents, OS processes, Postgres/Redis, or normal Chrome — and **never deletes** files.
 
 Admin once (pagefile enable — **adds** virtual memory only):
 
@@ -35,10 +43,13 @@ Then reboot.
 ## Layout
 
 ```
-RUN.bat / resolve.ps1     ← operator entry
-scripts/                  ← diagnose + pagefile + free-commit report
-agent/                    ← playbook for future AI agents (preserve this chat’s lessons)
-templates/                ← drop-in prisma-push-safe.mjs for monorepos
+RUN.bat / resolve.ps1              <- diagnose (+ auto safe release if commit low)
+RUN-RELEASE-MEMORY.bat             <- if OOM returns: stop safe orphans only
+RUN-RELEASE-MEMORY-WHATIF.bat      <- preview targets
+RUN-ADMIN-PAGEFILE.bat             <- once: create C:\pagefile.sys (reboot)
+scripts/                           <- diagnose, pagefile, release-safe-memory
+agent/                             <- playbook + chat archive for future agents
+templates/                         <- prisma-push-safe.mjs drop-in
 ```
 
 ## Agent chat for the future
