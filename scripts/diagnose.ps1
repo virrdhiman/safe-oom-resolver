@@ -46,5 +46,5 @@ if ($unsafe) {
 }
 
 Write-Host ""
-Write-Host "VERDICT: OK — commit headroom looks usable." -ForegroundColor Green
+Write-Host "VERDICT: OK - commit headroom looks usable." -ForegroundColor Green
 exit 0

@@ -35,7 +35,7 @@ Write-Host ""
 & "$Root\scripts\diagnose.ps1"
 $diagExit = $LASTEXITCODE
 
-Write-Step "Commit pressure relief (report only — does not kill your browsers)"
+Write-Step "Commit pressure relief (report only - does not kill your browsers)"
 & "$Root\scripts\report-memory-hogs.ps1"
 
 $os = Get-CimInstance Win32_OperatingSystem
@@ -45,22 +45,20 @@ $totalPhysMB = [math]::Round($os.TotalVisibleMemorySize / 1024)
 $hasPagefileHeadroom = $totalVirtMB -gt ($totalPhysMB + 512)
 
 if (-not $hasPagefileHeadroom) {
-  Write-Warn "Commit limit ≈ physical RAM — Windows pagefile appears OFF/empty."
+  Write-Warn "Commit limit ~ physical RAM - Windows pagefile appears OFF/empty."
   Write-Warn "This is the usual root cause of editor/Prisma OOM crashes."
   if (-not $SkipPagefileHint) {
     Write-Host ""
     Write-Host "NEXT (required for permanent fix):" -ForegroundColor Yellow
     Write-Host "  1. Close extra Chrome / editor windows"
-    Write-Host "  2. Right-click RUN-ADMIN-PAGEFILE.bat → Run as administrator"
+    Write-Host "  2. Right-click RUN-ADMIN-PAGEFILE.bat -> Run as administrator"
     Write-Host "  3. Reboot"
-    Write-Host "  4. Re-run RUN.bat — commit free should be much higher"
+    Write-Host "  4. Re-run RUN.bat - commit free should be much higher"
   }
 }
 
 if ($ProjectRoot -and (Test-Path $ProjectRoot)) {
   Write-Step "Optional project check: $ProjectRoot"
-  $hits = Select-String -Path (Join-Path $ProjectRoot "*") -Pattern "max-old-space-size=8192" -SimpleMatch -ErrorAction SilentlyContinue
-  # shallow scan common script locations only
   $scan = @(
     "package.json",
     "packages\database\package.json",
@@ -79,13 +77,13 @@ if ($ProjectRoot -and (Test-Path $ProjectRoot)) {
 }
 
 Write-Step "Agent playbook location (for future chats)"
-Write-Ok "agent\AGENTS.md + agent\PLAYBOOK.md — keep this repo; point future agents here"
+Write-Ok "agent\AGENTS.md + agent\PLAYBOOK.md - keep this repo; point future agents here"
 
 if ($freeCommitMB -lt 1200) {
-  Write-Err "Commit free ~${freeCommitMB}MB — still unsafe for Prisma/heavy Node."
+  Write-Err "Commit free ~${freeCommitMB}MB - still unsafe for Prisma/heavy Node."
   Write-Err "Close browsers and/or enable pagefile + reboot before retrying heavy work."
   exit 2
 }
 
-Write-Ok "Commit free ~${freeCommitMB}MB — safer for Node/Prisma/editor."
+Write-Ok "Commit free ~${freeCommitMB}MB - safer for Node/Prisma/editor."
 exit 0

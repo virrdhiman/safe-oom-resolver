@@ -10,7 +10,7 @@
 #Requires -RunAsAdministrator
 $ErrorActionPreference = "Stop"
 
-Write-Host "==> Enabling Windows automatic managed pagefile (SAFE — no deletes)" -ForegroundColor Cyan
+Write-Host "==> Enabling Windows automatic managed pagefile (SAFE - no deletes)" -ForegroundColor Cyan
 
 $mmPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management"
 $before = Get-ItemProperty -Path $mmPath
