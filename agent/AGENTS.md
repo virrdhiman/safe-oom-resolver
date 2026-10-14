@@ -25,3 +25,7 @@ If virtual free ≪ physical free, or commit limit ≈ RAM → enable pagefile (
 ## Related project fix
 
 Flipkart suite already has `scripts/prisma-push-safe.mjs` pattern — also copied under `templates/` in this repo.
+
+## Pull request workflow
+
+All changes go through a pull request: create a branch, open a PR, never push directly to the default branch.
